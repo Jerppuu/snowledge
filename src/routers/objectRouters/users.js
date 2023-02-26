@@ -26,7 +26,8 @@ const saltRounds = 15;
 const { body, validationResult } = require("express-validator");
 
 function getAll() {
-  database.query("SELECT * FROM Kayttajat", function (err, result) {
+  return database.query("SELECT * FROM Kayttajat",
+  function (err, result) {
     if (err) throw err;
     return result;
   });
@@ -40,7 +41,7 @@ router.get("/all", (req, res, getAll) => {
 });
 
 function getUser(req) {
-  database.query("SELECT * FROM Kayttajat WHERE ID = ?",
+  return database.query("SELECT * FROM Kayttajat WHERE ID = ?",
     [
       req.decoded.id
     ],
@@ -187,4 +188,4 @@ router.delete("/:id", function(req, res) {
     });
 });
 
-module.exports = { router, getUser };
+module.exports = { router, getUser, getAll };
