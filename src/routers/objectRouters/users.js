@@ -25,27 +25,35 @@ const saltRounds = 15;
 //alusta tarkistus
 const { body, validationResult } = require("express-validator");
 
-
-//kaikkien käyttäjien haku
-router.get("/all", function(req, res) {
+function getAll() {
   database.query("SELECT * FROM Kayttajat", function (err, result) {
     if (err) throw err;
-    res.json(result);
-    res.status(200);
+    return result;
   });
+}
+
+//kaikkien käyttäjien haku
+router.get("/all", (req, res, getAll) => {
+  getAll();
+  res.json(result);
+  res.status(200);
 });
 
-//yhden käyttäjän haku
-router.get("/", function(req, res) {
+function getUser(req) {
   database.query("SELECT * FROM Kayttajat WHERE ID = ?",
     [
       req.decoded.id
     ],
     function (err, result) {
       if (err) throw err;
-      res.json(result);
-      res.status(200);
+      return result;
     });
+};
+
+router.get("/", (req, res, getUser) => {
+  const result = getUser(req);
+  res.json(result);
+  res.status(200);
 });
 
 //käyttäjän teko
@@ -179,4 +187,4 @@ router.delete("/:id", function(req, res) {
     });
 });
 
-module.exports = router;
+module.exports = { router, getUser };
