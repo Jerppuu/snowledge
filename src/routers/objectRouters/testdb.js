@@ -14,16 +14,18 @@ var users = [
 ];
 
 var testdb = {
-  query(query, params, callback) {
+  query(query, opt1, opt2) {
+    const callback = opt2 === undefined ? opt1 : opt2;
+
     switch (query) {
       case "SELECT * FROM Kayttajat WHERE ID = ?":
         const user = users.filter(obj => {
-          return obj.id === parseInt(params);
+          return obj.id === parseInt(opt1);
         });
         return callback(null, user);
       
         case "SELECT * FROM Kayttajat":
-          return params(null, users); 
+          return callback(null, users); 
 
       default:
         return "hello world";

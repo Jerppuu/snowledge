@@ -41,6 +41,8 @@ router.get("/all", (req, res, getAll) => {
 });
 
 function getUser(req) {
+  if(req.decoded.id === undefined)
+    throw new Error("user id not defined");
   return database.query("SELECT * FROM Kayttajat WHERE ID = ?",
     [
       req.decoded.id
