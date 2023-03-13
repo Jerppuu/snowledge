@@ -18,28 +18,32 @@ Arttu Lakkala 6.12 Refactoroitiin API:sta
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const util = require('util');
 const database = require("./database");
-
-const query = util.promisify(database.query).bind(database);
 
 const saltRounds = 15;
 //const secret = "Lumihiriv0";
 //alusta tarkistus
 const { body, validationResult } = require("express-validator");
 
-async function getAll() {
-  return await query("SELECT * FROM Kayttajat",
+function getAll() {
+  return database.query("SELECT * FROM Kayttajat",
   function (err, result) {
     if (err) throw err;
     return result;
   });
 }
 
-async function getUser(req) {
+//kaikkien käyttäjien haku
+router.get("/all", (req, res, getAll) => {
+  getAll();
+  res.json(result);
+  res.status(200);
+});
+
+function getUser(req) {
   if(req.decoded.id === undefined)
     throw new Error("user id not defined");
-  return await query("SELECT * FROM Kayttajat WHERE ID = ?",
+  return database.query("SELECT * FROM Kayttajat WHERE ID = ?",
     [
       req.decoded.id
     ],
@@ -49,23 +53,10 @@ async function getUser(req) {
     });
 };
 
-//kaikkien käyttäjien haku
-router.get("/all", (req, res, getAll) => {
-  getAll()
-    .then((result) => {
-      res.json(result);
-      res.status(200);
-    })
-    .catch(err => res.status(400).json(err));
-});
-
 router.get("/", (req, res, getUser) => {
-  getUser()
-    .then((result) => {
-      res.json(result);
-      res.status(200);
-    })
-    .catch(err => res.status(400).json(err));
+  const result = getUser(req);
+  res.json(result);
+  res.status(200);
 });
 
 //käyttäjän teko
@@ -161,6 +152,7 @@ router.put("/:id", function(req, res) {
   }
   
 });
+
 
 router.delete("/:id", function(req, res) {
   database.query(

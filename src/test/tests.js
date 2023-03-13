@@ -1,34 +1,25 @@
 var userapi = require('../routers/objectRouters/users');
 var chai = require('chai');
-var chaiPromises = require('chai-as-promised');
-chai.use(chaiPromises);
 var assert = chai.assert;
-var expect = chai.expect;
 
-describe('GET users', function () {
-  it('should get all users', async function () {
-    userapi.getAll()
-      .then((users) => {
-        assert.deepEqual(users, [
-          { firstname: "first", lastname: "user", email: "first@user.com", id: 1 },
-          { firstname: "second", lastname: "user", email: "second@user.com", id: 2 }
-        ]);
-        done();
-      });
+describe('/GET user endpoint', function () {
+  it('should get all users', function () {
+    let user = userapi.getAll();
+    assert.deepEqual(user, [
+      { firstname: "first", lastname: "user", email: "first@user.com", id: 1 },
+      { firstname: "second", lastname: "user", email: "second@user.com", id: 2 }
+    ])
   });
 });
 
-describe('GET single user', function () {
-  it('should get specific user with valid id', async function () {
+describe('/GET user endpoint', function () {
+  it('should get specific user with valid id', function () {
     let req = { decoded: { id: 1 }};
-    userapi.getUser(req)
-      .then((user) => {
-        assert.deepEqual(user, [{ firstname: "first", lastname: "user", email: "first@user.com", id: 1 }]);
-        done();
-      });
+    let user = userapi.getUser(req);
+    assert.deepEqual(user, [{ firstname: "first", lastname: "user", email: "first@user.com", id: 1 }])
   });
-  it('should throw when id not specified', async function () {
+  it('should throw when id not specified', function () {
     let req = { decoded: { id: undefined }};
-    await expect(userapi.getUser(req)).to.be.rejectedWith("user id not defined");
+    assert.throws(() => userapi.getUser(req), Error, "user id not defined");
   });
 });
